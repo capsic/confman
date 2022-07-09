@@ -1,0 +1,9 @@
+{
+    "port": 7777,
+    "configurationFile": "configuration.conf",
+    "encrypt": false,
+    "ipWhitelist": [
+        "127.0.0.1",
+        "[::1]"
+    ]
+}
