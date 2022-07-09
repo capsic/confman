@@ -80,6 +80,11 @@ http://127.0.0.1:7777/get?key=rabbitmq.credentials.password
 >> "rabbitpassword"
 ```
 
+## Credits
+[github.com/gorilla/mux](https://github.com/gorilla/mux)
+
+[github.com/tidwall/gjson](https://github.com/tidwall/gjson)
+
 
 ## License
 [MIT](https://github.com/capsic/confman/blob/main/LICENSE)
