@@ -1,10 +1,19 @@
 # confman
+[![Generic badge](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/capsic/confman/blob/main/LICENSE) [![Generic badge](https://img.shields.io/badge/Made_with-Go-green.svg)](https://go.dev)
 
 Simple configuration manager implemented as REST-ful microservice.
 
 Useful if you have a project that consists of multiple applications/modules. `confman` provides a secure and easy way to maintain centralized configuration file that can be conveniently shared and accessed by your applications/modules across the whole project.
 
 ## Installation
+
+Install all dependencies. Skip any dependencies that you already have in your Go installation.
+
+```bash
+go get -u github.com/gorilla/mux
+go get -u github.com/tidwall/gjson
+go get -u golang.org/x/term
+```
 
 Clone and build this repository.
 
@@ -24,14 +33,20 @@ go build .
     "ipWhitelist": [
         "127.0.0.1",
         "[::1]"
-    ]
+    ],
+    "ssl": true,
+    "certFile": "fullchain.pem",
+    "keyFile": "privkey.pem"
 }
 ```
 1. `port` - The microservice will be bound to this port.
-2. `configurationFile` - The configuration file name (inside `data` folder) that will be served by `confman`.
+2. `configurationFile` - The configuration file name (inside `data` directory) that will be served by `confman`.
 3. `encrypt` - Configuration file may contain sensitive informations (eg. database password, private IP address, email info, etc.), you might want to enable this option so `confman` will encrypt the original configuration file once you start the service. You will be prompted to enter encryption key when you start the service.
 Supported encryption key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes (AES-256). 
 4. `ipWhitelist` - Additional security measure to limit access by remote IP address.
+5. `ssl` - Enable/disable SSL support on the service. If enabled you must place your *certificate file* (eg. cert.pem) and *private key file* (eg. key.pem) in the `cert` directory.
+6. `certFile` - SSL certificate file name.
+7. `keyFile` - SSL private key file name.
 
 
 **`/data/configuration.conf`** - the actual configuration file that will be served by `confman`, put whatever you need in here. Should be in JSON format, elements can be nested arbitrarily.
@@ -98,6 +113,8 @@ http://127.0.0.1:7777/get?key=someArray.2.data.0
 [github.com/gorilla/mux](https://github.com/gorilla/mux)
 
 [github.com/tidwall/gjson](https://github.com/tidwall/gjson)
+
+[golang.org/x/term](https://pkg.go.dev/golang.org/x/term)
 
 
 ## License

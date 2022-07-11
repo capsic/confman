@@ -66,7 +66,15 @@ func (a *App) Run() {
 	fmt.Println("Starting Confman bound to 0.0.0.0:" + port + ".")
 
 	addr := ":" + port
-	err := http.ListenAndServe(addr, a.Router)
+	var err error
+
+	if gjson.Get(config, "ssl").Bool() {
+		certFile := "cert/" + gjson.Get(config, "certFile").String()
+		keyFile := "cert/" + gjson.Get(config, "keyFile").String()
+		err = http.ListenAndServeTLS(addr, certFile, keyFile, a.Router)
+	} else {
+		err = http.ListenAndServe(addr, a.Router)
+	}
 
 	if err != nil {
 		panic(err)
