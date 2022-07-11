@@ -45,10 +45,10 @@ go build .
 2. `configurationFile` - The configuration file name (inside `data` directory) that will be served by `confman`.
 3. `encrypt` - Configuration file may contain sensitive informations (eg. database password, private IP address, email info, etc.), you might want to enable this option so `confman` will encrypt the original configuration file once you start the service. You will be prompted to enter encryption key when you start the service.
 Supported encryption key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes (AES-256). 
-4. `ipWhitelist` - Additional security measure to limit access by remote IP address.
+4. `ipWhitelist` - Additional security measure to limit access by remote IP address. Empty array means no IP checking.
 5. `ssl` - Enable/disable SSL support on the service. If enabled you must place your *certificate file* (eg. cert.pem) and *private key file* (eg. key.pem) in the `cert` directory.
-6. `certFile` - SSL certificate file name.
-7. `keyFile` - SSL private key file name.
+6. `certFile` - SSL certificate file name, ignore if `ssl` is disabled.
+7. `keyFile` - SSL private key file name, ignore if `ssl` is disabled.
 
 
 **`/data/configuration.conf`** - the actual configuration file that will be served by `confman`, put whatever you need in here. Should be in JSON format, elements can be nested arbitrarily.
@@ -101,13 +101,13 @@ http://127.0.0.1:7777/get?key=rabbitmq.port
 http://127.0.0.1:7777/get?key=rabbitmq.credentials.password
 >> "rabbitpassword"
 
-http://127.0.0.1:7777/get?key=someArray
+https://127.0.0.1:7777/get?key=someArray
 >> [{"id":1,"name":"John"},{"id":2,"name":"Doe"},{"id":3,"uname":"Jane","username":"janedoe"}]
 
-http://127.0.0.1:7777/get?key=someArray.2.data
+https://127.0.0.1:7777/get?key=someArray.2.data
 >> ["a","b","c",1,2,3]
 
-http://127.0.0.1:7777/get?key=someArray.2.data.0
+https://127.0.0.1:7777/get?key=someArray.2.data.0
 >> "a"
 ```
 

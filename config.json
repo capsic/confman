@@ -6,7 +6,7 @@
         "127.0.0.1",
         "[::1]"
     ],
-    "ssl": true,
+    "ssl": false,
     "certFile": "fullchain.pem",
     "keyFile": "privkey.pem"
 }
