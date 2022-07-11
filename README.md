@@ -34,7 +34,7 @@ Supported encryption key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes 
 4. `ipWhitelist` - Additional security measure to limit access by remote IP address.
 
 
-**`/data/configuration.conf`** - the actual configuration file that will be served by `confman`, put whatever you need in here. Should be in JSON format, can be nested arbitrarily.
+**`/data/configuration.conf`** - the actual configuration file that will be served by `confman`, put whatever you need in here. Should be in JSON format, elements can be nested arbitrarily.
 ```json
 ...
 {
@@ -52,7 +52,12 @@ Supported encryption key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes 
             "user": "rabbituser",
             "password": "rabbitpassword"
         }
-    }
+    },
+    "someArray": [
+        {"id": 1, "name": "John"},
+        {"id": 2, "name": "Doe"},
+        {"id": 3, "name": "Jane", "data": ["a", "b", "c", 1, 2, 3]}
+    ]
 }
 ...
 ```
@@ -73,11 +78,20 @@ http://127.0.0.1:7777/get?key=mysql
 http://127.0.0.1:7777/get?key=mysql.host
 >> "127.0.0.1"
 
-http://127.0.0.1:7777/get?key=rabbitmq.credentials
->> {"password":"rabbitpassword","user":"rabbituser"}
+http://127.0.0.1:7777/get?key=rabbitmq.port
+>> 5672
 
 http://127.0.0.1:7777/get?key=rabbitmq.credentials.password
 >> "rabbitpassword"
+
+http://127.0.0.1:7777/get?key=someArray
+>> [{"id":1,"name":"John"},{"id":2,"name":"Doe"},{"id":3,"uname":"Jane","username":"janedoe"}]
+
+http://127.0.0.1:7777/get?key=someArray.2.data
+>> ["a","b","c",1,2,3]
+
+http://127.0.0.1:7777/get?key=someArray.2.data.0
+>> "a"
 ```
 
 ## Credits
