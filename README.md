@@ -1,13 +1,15 @@
+
 # confman
 [![Generic badge](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/capsic/confman/blob/main/LICENSE) [![Generic badge](https://img.shields.io/badge/Made_with-Go-green.svg)](https://go.dev)
 
-Simple configuration manager implemented as REST-ful microservice.
+Simple configuration manager implemented as REST-ful microservice, written in [Go](https://go.dev/).
 
 Useful if you have a project that consists of multiple applications/modules. `confman` provides a secure and easy way to maintain centralized configuration file that can be conveniently shared and accessed by your applications/modules across the whole project.
 
 ## Installation
 
-Install all dependencies. Skip any dependencies that you already have in your Go installation.
+Install all dependencies.
+Skip any dependencies that you already have in your Go installation.
 
 ```bash
 go get -u github.com/gorilla/mux
