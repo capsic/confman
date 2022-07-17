@@ -82,9 +82,15 @@ Supported encryption key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes 
 ## Usage
 
 Just execute the Go binary that you got at build.
+By default `CONFMANHOME` is set to `/opt/capsic/confman`, if you're not running from this directory you need to specify the absolute path you're running this service from. This can be done either by:
+
+1. Manually set `CONFMANHOME` env. variable to the directory of your `confman` build.
+2. Or, specify it as CLI argument to the command (example #2).
+3. Or, change the `DEFAULTHOME` constant in `main.go` then rebuild the binary.
 
 ```bash
 ./confman
+./confman /Users/myuser/confman
 ```
 
 Making a REST request (example):
