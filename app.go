@@ -30,12 +30,7 @@ type App struct {
 }
 
 func (a *App) Initialize() {
-	// Load Confman config
-	basePath, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	bts, err := ioutil.ReadFile(filepath.Join(basePath, "./", "config.json"))
+	bts, err := ioutil.ReadFile(filepath.Join(os.Getenv("CONFMANHOME"), "config.json"))
 	if err != nil {
 		panic(err)
 	}
@@ -69,8 +64,8 @@ func (a *App) Run() {
 	var err error
 
 	if gjson.Get(config, "ssl").Bool() {
-		certFile := "cert/" + gjson.Get(config, "certFile").String()
-		keyFile := "cert/" + gjson.Get(config, "keyFile").String()
+		certFile := filepath.Join(os.Getenv("CONFMANHOME"), "cert", gjson.Get(config, "certFile").String())
+		keyFile := filepath.Join(os.Getenv("CONFMANHOME"), "cert", gjson.Get(config, "keyFile").String())
 		err = http.ListenAndServeTLS(addr, certFile, keyFile, a.Router)
 	} else {
 		err = http.ListenAndServe(addr, a.Router)
@@ -135,7 +130,7 @@ func _IsJSON(str string) bool {
 }
 
 func _ReadConfiguration() string {
-	bts, err := ioutil.ReadFile(filepath.Join(basePath, "data", configurationFile))
+	bts, err := ioutil.ReadFile(filepath.Join(os.Getenv("CONFMANHOME"), "data", configurationFile))
 	if err != nil {
 		panic(err)
 	}
