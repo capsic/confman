@@ -58,16 +58,21 @@ func (a *App) Initialize() {
 
 func (a *App) Run() {
 	port := gjson.Get(config, "port").String()
-	fmt.Println("Starting Confman bound to 0.0.0.0:" + port + ".")
 
 	addr := ":" + port
 	var err error
 
+	startMessage := "confman started on [::]:" + port
+
 	if gjson.Get(config, "ssl").Bool() {
+		startMessage = "confman (secure) started on [::]:" + port
+		fmt.Println(startMessage)
+
 		certFile := filepath.Join(os.Getenv("CONFMANHOME"), "cert", gjson.Get(config, "certFile").String())
 		keyFile := filepath.Join(os.Getenv("CONFMANHOME"), "cert", gjson.Get(config, "keyFile").String())
 		err = http.ListenAndServeTLS(addr, certFile, keyFile, a.Router)
 	} else {
+		fmt.Println(startMessage)
 		err = http.ListenAndServe(addr, a.Router)
 	}
 
