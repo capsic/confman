@@ -19,11 +19,13 @@ import (
 	"golang.org/x/term"
 )
 
-var encryptionKey string
+var encryptionPassword string
 var basePath string
 var config string            // Confman config
 var configData string        // The actual served config
 var configurationFile string // Configuration JSON file
+
+const encryptionKey = "ThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8"
 
 type App struct {
 	Router *mux.Router
@@ -38,15 +40,14 @@ func (a *App) Initialize() {
 
 	// Load config data
 	configurationFile = gjson.Get(config, "configurationFile").String()
-	encryptionKey = ""
+	encryptionPassword = ""
 	if gjson.Get(config, "encrypt").Bool() {
-		fmt.Println("Supported key size: 16 bytes (AES-128), 24 bytes (AES-192), 32 bytes (AES-256)")
-		fmt.Println("Enter Encryption Key: ")
+		fmt.Println("Enter Encryption Passphrase: ")
 		byteKey, err := term.ReadPassword(int(syscall.Stdin))
 		if err != nil {
-			panic("Missing/invalid encryption key.")
+			panic("Missing/invalid encryption passphrase.")
 		}
-		encryptionKey = string(byteKey)
+		encryptionPassword = string(byteKey)
 	}
 	_LoadConfiguration()
 
@@ -149,7 +150,10 @@ func _LoadConfiguration() {
 		configData = string(fileData)
 
 		if gjson.Get(config, "encrypt").Bool() {
-			if encryptionKey != "" {
+			if encryptionPassword != "" {
+				// Salt with passphrase
+				configData = encryptionPassword + ":" + configData + ":" + encryptionPassword
+
 				// Encrypt file
 				block, err := aes.NewCipher([]byte(encryptionKey))
 				if err != nil {
@@ -172,21 +176,21 @@ func _LoadConfiguration() {
 					panic(err)
 				}
 			} else {
-				panic("Missing/invalid encryption key.")
+				panic("Missing/invalid encryption passphrase.")
 			}
 		}
 	} else {
-		if encryptionKey == "" {
-			fmt.Println("Configuration encrypted, encryption key needed.")
-			fmt.Println("Enter Encryption Key: ")
+		if encryptionPassword == "" {
+			fmt.Println("Configuration encrypted, encryption passphrase needed.")
+			fmt.Println("Enter Encryption Passphrase: ")
 			byteKey, err := term.ReadPassword(int(syscall.Stdin))
 			if err != nil {
-				panic("Missing/invalid encryption key.")
+				panic("Missing/invalid encryption passphrase.")
 			}
-			encryptionKey = string(byteKey)
+			encryptionPassword = string(byteKey)
 		}
 
-		if encryptionKey != "" {
+		if encryptionPassword != "" {
 			block, err := aes.NewCipher([]byte(encryptionKey))
 			if err != nil {
 				fmt.Println("Restore configuration file manually.")
@@ -208,16 +212,24 @@ func _LoadConfiguration() {
 			}
 			configData = string(fileData)
 
-			if !gjson.Get(config, "encrypt").Bool() {
-				// Decrypt file
-				err = ioutil.WriteFile(filepath.Join(basePath, "data", configurationFile), []byte(configData), 0777)
-				if err != nil {
-					fmt.Println("Restore configuration file manually.")
-					panic(err)
+			// Remove salt
+			configData = strings.Replace(configData, encryptionPassword+":", "", 1)
+			configData = strings.Replace(configData, ":"+encryptionPassword, "", 1)
+
+			if !_IsJSON(configData) {
+				panic("Missing/invalid encryption passphrase.")
+			} else {
+				if !gjson.Get(config, "encrypt").Bool() {
+					// Decrypt file
+					err = ioutil.WriteFile(filepath.Join(basePath, "data", configurationFile), []byte(configData), 0777)
+					if err != nil {
+						fmt.Println("Restore configuration file manually.")
+						panic(err)
+					}
 				}
 			}
 		} else {
-			panic("Missing/invalid encryption key, restore configuration file manually.")
+			panic("Missing/invalid encryption passphrase, restore configuration file manually.")
 		}
 	}
 }
